@@ -24,7 +24,14 @@ export default function Main({ navigation }) {
 
   if (errorMsg) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#F0F2F5",
+        }}
+      >
         <Text style={{ color: "red", fontSize: 16 }}>{errorMsg}</Text>
       </View>
     );
@@ -54,7 +61,13 @@ export default function Main({ navigation }) {
       .map(
         (u) => `
         L.marker([${u.coords.latitude}, ${u.coords.longitude}]).addTo(map)
-         .bindPopup("<b>${u.nome}</b><br/>${u.email}");
+         .bindTooltip("<b style='color: #2F80ED; font-size: 14px;'>${u.nome}</b>", { 
+            permanent: true, 
+            direction: "top", 
+            offset: [0, -35],
+            className: "custom-tooltip"
+         })
+         .bindPopup("<b>${u.nome}</b>");
       `,
       )
       .join("");
@@ -67,8 +80,16 @@ export default function Main({ navigation }) {
           <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
           <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
           <style>
-              body { padding: 0; margin: 0; }
+              body { padding: 0; margin: 0; background-color: #F0F2F5; }
               html, body, #map { height: 100%; width: 100vw; }
+              .custom-tooltip {
+                  background: white;
+                  border: none;
+                  border-radius: 8px;
+                  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                  padding: 4px 8px;
+              }
+              .leaflet-tooltip-top:before { border-top-color: white; }
           </style>
       </head>
       <body>
@@ -81,16 +102,15 @@ export default function Main({ navigation }) {
                   attribution: '© OpenStreetMap'
               }).addTo(map);
 
-              // Marcador da SUA localização (Vermelho)
               var myIcon = L.icon({
                   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
                   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
                   iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
               });
               L.marker([${initialCoords.latitude}, ${initialCoords.longitude}], {icon: myIcon}).addTo(map)
-               .bindPopup("<b>Você está aqui</b>").openPopup();
+               .bindTooltip("<b style='color: #FF3B30;'>Você</b>", { permanent: true, direction: "top", offset: [0, -35], className: "custom-tooltip" })
+               .bindPopup("<b>A sua localização atual</b>");
 
-              // Marcadores dos utilizadores cadastrados
               ${marcadores}
           </script>
       </body>
